@@ -35,10 +35,11 @@ int main(){
 
 
                 int recvlen = recvfrom(sock, buffer, sizeof(buffer), 0, NULL, NULL);
-                printf("received %d bytes\n", recvlen);
+                //printf("received %d bytes\n", recvlen);
                 if (recvlen > 0) {
                         buf[recvlen] = 0;
                         printf("RSSI: \"%d\"\n", buf);
+                    
                 }
     }
 
