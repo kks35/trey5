@@ -12,13 +12,9 @@ using namespace std
 int main(){
     //create socket
     int sock = socket(AF_INET, SOCK_DGRAM, 0);
-    char buffer[2048];
+    char buffer[64];
 
-    if(client < 0)
-    {
-        cout<<"error creating sockets..." << endl;
-        exit(1)
-    }
+
     //send request to server
     struct sockaddr_in serv_addr;//began to binding the socket
     memset(&serv_addr, 0, sizeof(serv_addr));  //0zero for each byte
