@@ -1,64 +1,69 @@
-#include <stdio.h>
-#include <winsock2.h>
 
-#pragma comment(lib,"WS2_32.lib")
-#define BUF_SIZE    64
+// KKS Ethernet UDP connection
+#include <SPI.h> // SPI library
+#include <Ethernet2.h>
+#include <EthernetUdp2.h>         // UDP library 
+#include <Wire.h> // for i2c
 
-int main(void)
-{
-    WSADATA wsd;   // initialize socket resource
-    SOCKET  s;
+/////////////////////////////////////////////////////////////// i2c reading address/////////////////
+int timberconAddress = 0x51; // device address
+int X0, X1, X_out;
+#define rssi_Register_DATA_ADDR 0x68 // Hexadecima address 
+uint32_t i=0;
+/////////////////////////////////////////////////////////////// i2C reading address/////////////////
 
-    if(WSAStartup(MAKEWORD(2,2),&wsd) != 0)
-    {
-        printf("WSAStartup failed !/n");
-        return 1;
-    }
+byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED }; // assign the MAC address
+IPAddress ip(192, 168, 1, 177); // assign the ip address
+unsigned int localPort = 8888;      // local port to talkover
+char packetBuffer[UDP_TX_PACKET_MAX_SIZE];  //buffer to hold data packet
+String datReq; //String for our data
+int packetSize;// Size of the packet
+EthernetUDP Udp; // Create UDP Object
 
-    // setup socket
-    s = socket(AF_INET,SOCK_DGRAM,0);
-    if(s == INVALID_SOCKET)
-    {
-        printf("socket() failed, Error Code:%d/n",WSAGetLastError());
-        WSACleanup();
-        return 1;
-    }
+char  ReplyBuffer[] = "acknowledged";       // a string to send back
 
-    char        buf[BUF_SIZE];  // buld buffer for data
-    SOCKADDR_IN servAddr;       // define socket address
-    SOCKET      sockClient = socket(AF_INET,SOCK_DGRAM,0);
-    int         nRet;
+void setup() {
+  // start the Ethernet and UDP:
+  Serial.begin(115200); //Initialize Serial Port
+  Ethernet.begin(mac, ip); //Initialize Ethernet
+  Udp.begin(localPort); //Initialize UDP
+  delay(100); //Delay
 
-    ZeroMemory(buf,BUF_SIZE);
-    strcpy(buf,"UDP Hello World !");
-
-    // set the address
-    servAddr.sin_family = AF_INET;
-    servAddr.sin_addr.S_un.S_addr = inet_addr("192.168.1.177");
-    servAddr.sin_port = htons(8888);
-
-    // send data to server
-    int nServAddLen = sizeof(servAddr);
-    if(sendto(sockClient,buf,BUF_SIZE,0,(sockaddr *)&servAddr,nServAddLen) == SOCKET_ERROR)
-    {
-        printf("recvfrom() failed:%d/n",WSAGetLastError());
-        closesocket(s);
-        WSACleanup();
-        return 1;
-    }
-    nRet = recvfrom(sockClient,buf,BUF_SIZE,0,(sockaddr *)&servAddr,&nServAddLen);
-    if(SOCKET_ERROR == nRet)
-    {
-        printf("recvfrom failed !/n");
-        closesocket(s);
-        WSACleanup();
-        return -1;
-    }
-
-    // printout the data 
-    printf("Recv From Server:%s/n",buf);
-    closesocket(s);
-    WSACleanup();
-    return 0;
+  ///////////For i2C
+  Wire.begin();
+  Serial1.begin(115200);
+  delay(100);
+   
 }
+
+void loop() {
+
+  int packetSize = Udp.parsePacket();// if there's data available, read a packet
+  if (packetSize>0) {     //if packet size>0 , some one is asking data
+    Udp.read(packetBuffer, UDP_TX_PACKET_MAX_SIZE); // Read data request
+    String datReq(packetBuffer); // convert char array into a string we called -- dataRequest
+
+    if(datReq == "X_out"){ // do the following i2c
+
+////////////////////////i2C reading from TimberCon//////////////
+  Wire.beginTransmission(timberconAddress);
+  Wire.write(rssi_Register_DATA_ADDR);
+  Wire.endTransmission(); 
+  Wire.requestFrom(timberconAddress, 2);    // request 2 bytes from timbercon #2
+
+  if (Wire.available()<=2) { // 
+    
+    X0 = Wire.read();
+    X1 = Wire.read();
+    X_out = X0*256+X1;
+    // send a reply to the IP address and port that sent us the packet we received
+    Udp.beginPacket(Udp.remoteIP(), Udp.remotePort());
+    Udp.print(X_out);
+    Udp.endPacket();
+ 
+}
+}
+  }
+}
+
 
