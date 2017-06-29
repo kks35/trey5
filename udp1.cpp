@@ -9,6 +9,7 @@
 using namespace std;
 
 #define port 8888
+
 int main(){
     //create socket
     int sock = socket(AF_INET, SOCK_DGRAM, 0);
@@ -21,7 +22,7 @@ int main(){
     serv_addr.sin_family = AF_INET;  //use IPv4
     serv_addr.sin_addr.s_addr = inet_addr("192.168.1.177");  //IP
     serv_addr.sin_port = htons(port);  //port
-    if (connect(sock, (struct sockaddr*)&serv_addr, sizeof(serv_addr)));
+    if (connect(sock, (struct sockaddr*)&serv_addr, sizeof(serv_addr)))
     {
         cout<<"Connecting to server..." <<endl;
     }
@@ -29,17 +30,16 @@ int main(){
 
     //read back data
     for (;;) {            
-                unasigned char buff[]="X_out";
+                unsigned char buff[]="X_out";
                 write(sock,buff,sizeof(buff));
 
 
 
                 int recvlen = recvfrom(sock, buffer, sizeof(buffer), 0, NULL, NULL);
-                //printf("received %d bytes\n", recvlen);
+		// printf("received %d bytes\n", recvlen);
                 if (recvlen > 0) {
                         buffer[recvlen] = 0;
                         printf("RSSI: \"%s\"\n", buffer);
-                    
                 }
     }
 
