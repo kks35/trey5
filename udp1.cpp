@@ -32,7 +32,7 @@ int main(){
                 struct sockaddr_in remaddr;
                 unasigned addrlen = sizeof(remaddr);
 
-                unsigned char buff="X_out";
+                unsigned char buff[]="X_out";
                 write(sock,buff,sizeof(buff));
 
 
