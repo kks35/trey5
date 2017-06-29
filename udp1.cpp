@@ -28,16 +28,13 @@ int main(){
 
 
     //read back data
-    for (;;) {
-                struct sockaddr_in remaddr;
-                unasigned addrlen = sizeof(remaddr);
-
-                unsigned char buff[]="X_out";
+    for (;;) {            
+                unasigned char buff[]="X_out";
                 write(sock,buff,sizeof(buff));
 
 
 
-                int recvlen = recvfrom(sock, buffer, sizeof(buffer), 0, (struct sockaddr *)&remaddr, &addrlen);
+                int recvlen = recvfrom(sock, buffer, sizeof(buffer), 0, NULL, NULL);
                 printf("received %d bytes\n", recvlen);
                 if (recvlen > 0) {
                         buf[recvlen] = 0;
