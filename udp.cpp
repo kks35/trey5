@@ -38,12 +38,12 @@ void setup() {
 
 void loop() {
 
-  int packetSize = Udp.parsePacket();// if there's data available, read a packet
-  if (packetSize>0) {     //if packet size>0 , some one is asking data
-    Udp.read(packetBuffer, UDP_TX_PACKET_MAX_SIZE); // Read data request
-    String datReq(packetBuffer); // convert char array into a string we called -- dataRequest
+  int packetSize = Udp.parsePacket();// if there's data available, read a packet //delete
+  if (packetSize>0) {     //if packet size>0 , some one is asking data //delete
+    Udp.read(packetBuffer, UDP_TX_PACKET_MAX_SIZE); // Read data request //delete
+    String datReq(packetBuffer); // convert char array into a string we called -- dataRequest //delete
 
-    if(datReq == "X_out"){ // do the following i2c
+    if(datReq == "X_out"){ // do the following i2c// try to remove //delete
 
 ////////////////////////i2C reading from TimberCon//////////////
   Wire.beginTransmission(timberconAddress);
@@ -61,8 +61,8 @@ void loop() {
     Udp.print(X_out);
     Udp.endPacket();
  
-}
-}
+}//delete
+}// delete
   }
 }
 
