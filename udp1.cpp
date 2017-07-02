@@ -26,12 +26,13 @@ int main(){
     {
         cout<<"Connecting to server..." <<endl;
     }
-
-
+    
+    unsigned char buff[]="X_out";
+    write(sock,buff,sizeof(buff));
+	
     //read back data
     for (;;) {            
-                //unsigned char buff[]="X_out";
-                //write(sock,buff,sizeof(buff));
+                
 
 
 
