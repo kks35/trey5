@@ -30,8 +30,8 @@ int main(){
 
     //read back data
     for (;;) {            
-                unsigned char buff[]="X_out";
-                write(sock,buff,sizeof(buff));
+                //unsigned char buff[]="X_out";
+                //write(sock,buff,sizeof(buff));
 
 
 
