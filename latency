@@ -44,7 +44,7 @@ int main(){
                         
                         ////////////////////////////////
                 char a[1024];
-                a<<buffer<<endl;
+                buffer<<a<<endl;
                             ofstream lat_;
                             lat_.open("latency.txt");
                             
