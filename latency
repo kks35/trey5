@@ -10,11 +10,12 @@
 using namespace std;
 
 #define port 8888
+#define BUF 1024;
 
 int main(){
     //create socket
     int sock = socket(AF_INET, SOCK_DGRAM, 0);
-    char buffer[64];
+
 
 
     //send request to server
@@ -31,35 +32,30 @@ int main(){
 
 
     //read back data
-    for (;;) {
+
 
        unsigned char buff[]="X_out";
        write(sock,buff,sizeof(buff));
-
-
-                int recvlen = recvfrom(sock, buffer, sizeof(buffer), 0, NULL, NULL);
+       
+       int len = 0; // length of buffer
+       char buffer[BUF]; 
+       while (len<BUF){ // if lengthn small than 1024 , keep obtain data
+                int recvlen = recvfrom(sock, buffer+len, BUF-len, 0, NULL, NULL);
+		len+=recvlen;
 		// printf("received %d bytes\n", recvlen);
-                if (recvlen > 0) {
-                        buffer[recvlen] = 0;
-                        
-                        ////////////////////////////////
-                char a[1024];
-                buffer<<a<<endl;
-                            ofstream lat_;
-                            lat_.open("latency.txt");
-                            
-                            for(i = 0; i< 1024; i++)
-                            {
-                                lat_<<a<<endl;
-                            }
-                            lat_.close();
-                            
+		}
+		FILE *f=fopen("latency.txt","w");
+		int written = 0;
+		while (len<BUF){
+		int writelen = fwrite(a+written, 1, BUF-written,f);
+		written += writelen;
                             
 
                 }
+		fclose(f);
     }
 
 
     close(sock);
     return 0;
-}
+
