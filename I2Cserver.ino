@@ -43,9 +43,9 @@ void loop() {
     if (packetSize>0) {     //if packet size>0 , some one is asking data
       Udp.read(packetBuffer, UDP_TX_PACKET_MAX_SIZE); // Read data request
       String datReq(packetBuffer); // convert char array into a string we called -- dataRequest
-      if(datReq == "X_out"){ // do the following i2c
+      if(datReq !== "X_out") // do the following i2c
+        return; //illigal do nothing
         xout_received = true;
-      }
     }
   }
     
@@ -69,7 +69,7 @@ void loop() {
     Udp.print(X_out);
     Udp.endPacket();
 
-    delayMicroseconds(2);
+    //delayMicroseconds(2);
   }
 }
 
